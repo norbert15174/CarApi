@@ -1,9 +1,6 @@
 package pl.carapi.cardemo.Services;
 
-import Repositories.CarRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import pl.carapi.cardemo.Repositories.CarRepository;
 import org.springframework.stereotype.Service;
 import pl.carapi.cardemo.Model.CarModel;
 import pl.carapi.cardemo.Model.Color;

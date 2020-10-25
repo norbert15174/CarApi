@@ -1,4 +1,4 @@
-package Repositories;
+package pl.carapi.cardemo.Repositories;
 
 import org.springframework.stereotype.Repository;
 import pl.carapi.cardemo.Model.CarModel;
