@@ -37,6 +37,7 @@ public class CarServices implements CarRepository {
     }
     @Override
     public List<CarModel> findByColor( String color ){
+            color.toUpperCase();
             return this.carModelList
                     .stream()
                     .filter(carModel -> carModel.getColor().equalsIgnoreCase(color))

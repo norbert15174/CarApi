@@ -1,6 +1,8 @@
 package pl.carapi.cardemo.Model;
 
-public class CarModel {
+import org.springframework.hateoas.RepresentationModel;
+
+public class CarModel extends RepresentationModel {
 
     private long id;
     private String brand;

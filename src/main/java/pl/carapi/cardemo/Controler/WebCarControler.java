@@ -2,12 +2,20 @@ package pl.carapi.cardemo.Controler;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.carapi.cardemo.Model.CarModel;
 import pl.carapi.cardemo.Services.CarServices;
+
+import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 
 @RestController()
 @RequestMapping(path = "/Cars", produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
@@ -22,25 +30,40 @@ public class WebCarControler {
 
 
     @GetMapping()
-    public ResponseEntity findAllPosition(){
-        ResponseEntity responseEntity = new ResponseEntity(carServices.findAll(), HttpStatus.OK);
-        return responseEntity;
+    public ResponseEntity<CollectionModel<CarModel>> findAllPosition(){
+        List<CarModel> carModels = carServices.findAll();
+        if(!carModels.isEmpty()){
+            carModels.forEach(carModel -> carModel.add(linkTo(WebCarControler.class).slash(carModel.getId()).withSelfRel()));
+            Link link = linkTo(WebCarControler.class).withSelfRel();
+            CollectionModel<CarModel> collectionModel = CollectionModel.of(carModels,link);
+            return new ResponseEntity(collectionModel,HttpStatus.FOUND);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(path="/{id}")
-    public ResponseEntity findCarById(@PathVariable long id){
+    public ResponseEntity<EntityModel<CarModel>> findCarById(@PathVariable long id){
         if(carServices
                 .findById(id)
-                .isPresent())
-            return new ResponseEntity(carServices.findById(id),HttpStatus.FOUND);
+                .isPresent()) {
+            Link link = linkTo(WebCarControler.class).slash(id).withSelfRel();
+            EntityModel<CarModel> entityModel = EntityModel.of(carServices.findById(id).get());
+            entityModel.add(link);
+            return new ResponseEntity(entityModel, HttpStatus.FOUND);
+        }
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(path="/color/{color}")
-    public ResponseEntity findCarByColor(@PathVariable String color){
-        if(!carServices.findByColor(color)
-                .isEmpty())
-            return new ResponseEntity(carServices.findByColor(color),HttpStatus.FOUND);
+    public ResponseEntity<CollectionModel<CarModel>> findCarByColor(@PathVariable String color){
+        List<CarModel> carModels = carServices.findByColor(color);
+        if(!carModels.isEmpty()){
+            carModels.forEach(car -> car.add(linkTo(WebCarControler.class).slash(car.getColor()).withSelfRel()));
+            Link link = linkTo(WebCarControler.class).withSelfRel();
+            CollectionModel<CarModel> collectionModel = CollectionModel.of(carModels);
+            collectionModel.add(link);
+            return new ResponseEntity(collectionModel,HttpStatus.FOUND);}
+
 
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
