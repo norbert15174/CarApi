@@ -2,18 +2,18 @@ package pl.carapi.cardemo.Model;
 
 import org.springframework.hateoas.RepresentationModel;
 
-public class CarModel extends RepresentationModel {
+public class CarModel extends RepresentationModel<CarModel> {
 
     private long id;
     private String brand;
     private String model;
-    private String color;
+    private Color color;
 
     public CarModel(long id, String brand, String model, String color) {
         this.id = id;
         this.brand = brand;
         this.model = model;
-        this.color = color;
+        this.color = new Color(color);
     }
 
     public CarModel() {
@@ -44,10 +44,10 @@ public class CarModel extends RepresentationModel {
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 
-    public void setColor(String color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 

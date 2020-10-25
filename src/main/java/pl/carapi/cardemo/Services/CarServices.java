@@ -6,6 +6,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import pl.carapi.cardemo.Model.CarModel;
+import pl.carapi.cardemo.Model.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class CarServices implements CarRepository {
             color.toUpperCase();
             return this.carModelList
                     .stream()
-                    .filter(carModel -> carModel.getColor().equalsIgnoreCase(color))
+                    .filter(carModel -> carModel.getColor().toString().equalsIgnoreCase(color))
                     .collect(Collectors.toList());
     }
     @Override
@@ -93,7 +94,7 @@ public class CarServices implements CarRepository {
                     break;
                 case "color":
                     this.carModelList.get((int)id-1)
-                            .setColor(newPosition);
+                            .setColor(new Color(newPosition));
                     break;
                 default:
                     return false;

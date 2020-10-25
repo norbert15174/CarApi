@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.carapi.cardemo.Model.CarModel;
 import pl.carapi.cardemo.Services.CarServices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -29,13 +30,20 @@ public class WebCarControler {
     }
 
 
+    CollectionModel<CarModel> linkToCar (List<CarModel> carModels){
+        CollectionModel<CarModel> collectionModel = CollectionModel.of(carModels);
+        collectionModel.forEach(carModel -> carModel.removeLinks());
+        Link link = linkTo(WebCarControler.class).withRel("All Cars");
+        collectionModel.add(link);
+        return  collectionModel;
+    }
+
     @GetMapping()
     public ResponseEntity<CollectionModel<CarModel>> findAllPosition(){
         List<CarModel> carModels = carServices.findAll();
         if(!carModels.isEmpty()){
-            carModels.forEach(carModel -> carModel.add(linkTo(WebCarControler.class).slash(carModel.getId()).withSelfRel()));
-            Link link = linkTo(WebCarControler.class).withSelfRel();
-            CollectionModel<CarModel> collectionModel = CollectionModel.of(carModels,link);
+            CollectionModel<CarModel> collectionModel = linkToCar(carModels);
+            collectionModel.forEach(carModel -> carModel.add(linkTo(WebCarControler.class).slash(carModel.getId()).withSelfRel()));
             return new ResponseEntity(collectionModel,HttpStatus.FOUND);
         }
         return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -58,10 +66,8 @@ public class WebCarControler {
     public ResponseEntity<CollectionModel<CarModel>> findCarByColor(@PathVariable String color){
         List<CarModel> carModels = carServices.findByColor(color);
         if(!carModels.isEmpty()){
-            carModels.forEach(car -> car.add(linkTo(WebCarControler.class).slash(car.getColor()).withSelfRel()));
-            Link link = linkTo(WebCarControler.class).withSelfRel();
-            CollectionModel<CarModel> collectionModel = CollectionModel.of(carModels);
-            collectionModel.add(link);
+            CollectionModel<CarModel> collectionModel = linkToCar(carModels);
+            collectionModel.forEach(carModel -> carModel.add(linkTo(WebCarControler.class).slash(carModel.getColor()).withSelfRel()));
             return new ResponseEntity(collectionModel,HttpStatus.FOUND);}
 
 
