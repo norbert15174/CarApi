@@ -1,9 +1,9 @@
-package pl.carapi.cardemo.Services;
+package pl.carapi.cardemo.services;
 
-import pl.carapi.cardemo.Repositories.CarRepository;
+import pl.carapi.cardemo.models.Color;
+import pl.carapi.cardemo.repositories.CarRepository;
 import org.springframework.stereotype.Service;
-import pl.carapi.cardemo.Model.CarModel;
-import pl.carapi.cardemo.Model.Color;
+import pl.carapi.cardemo.models.CarModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,9 @@ public class CarServices implements CarRepository {
 
 
     public CarServices() {
-        this.carModelList.add(new CarModel(1L,"BMW","X6","WHITE"));
-        this.carModelList.add(new CarModel(2L,"AUDI","A5","WHITE"));
-        this.carModelList.add(new CarModel(3L,"VOLSVAGEN","PASAT","METALIC"));
+        this.carModelList.add(new CarModel(1L,"BMW","X6", Color.BLACK));
+        this.carModelList.add(new CarModel(2L,"AUDI","A5",Color.BLUE));
+        this.carModelList.add(new CarModel(3L,"VOLSVAGEN","PASAT",Color.METALIC));
     }
 
     @Override
@@ -43,12 +43,17 @@ public class CarServices implements CarRepository {
     }
     @Override
     public boolean addCarModel(CarModel newCarModel){
-        boolean findCar = this.carModelList
-                .stream()
-                .filter(carModel -> carModel.getId() == newCarModel.getId())
-                .findFirst()
-                .isPresent();
-        if(findCar) return false;
+        int size = carModelList.size();
+
+        while (true) {
+            Optional<CarModel> findId = Optional.of(this.carModelList.get(size));
+            if (findId.isPresent()) {
+                size++;
+            }else {
+                break;
+            }
+        }
+        newCarModel.setId(size);
         this.carModelList.add(newCarModel);
         return true;
     }
@@ -59,8 +64,9 @@ public class CarServices implements CarRepository {
                 .filter(carModel -> carModel.getId() == modifyCarModel.getId())
                 .findFirst();
         if(findCar.isPresent()){
-            this.carModelList.remove(findCar.get());
-            this.carModelList.add(modifyCarModel);
+            this.carModelList.get((int)modifyCarModel.getId()).setBrand(modifyCarModel.getBrand());
+            this.carModelList.get((int)modifyCarModel.getId()).setModel(modifyCarModel.getModel());
+            this.carModelList.get((int)modifyCarModel.getId()).setColor(modifyCarModel.getColor());
             return true;
         }
         return false;
@@ -91,7 +97,7 @@ public class CarServices implements CarRepository {
                     break;
                 case "color":
                     this.carModelList.get((int)id-1)
-                            .setColor(new Color(newPosition));
+                            .setColor(Color.valueOf(newPosition));
                     break;
                 default:
                     return false;

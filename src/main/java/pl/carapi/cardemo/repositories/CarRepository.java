@@ -1,7 +1,7 @@
-package pl.carapi.cardemo.Repositories;
+package pl.carapi.cardemo.repositories;
 
 import org.springframework.stereotype.Repository;
-import pl.carapi.cardemo.Model.CarModel;
+import pl.carapi.cardemo.models.CarModel;
 
 import java.util.List;
 import java.util.Optional;
